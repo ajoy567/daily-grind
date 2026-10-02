@@ -1,3 +1,5 @@
+import string
+
 def clean_name(name: str) -> str:
     """
     Clean a person's name.
@@ -26,3 +28,39 @@ test_names = [
 
 for raw in test_names:
     print(f"{raw!r} -> {clean_name(raw)!r}")
+    
+
+def preprocess_text(text: str) -> str:
+    """
+    Preprocess a text string.
+
+    converts the text to lowercase.
+    removes all punctuation.
+    keeps the words separated by single spaces.
+
+    Args:
+        text (str): The raw text.
+
+    Returns:
+      str: The lowercase text with punctuation removed and single spaces
+      between words.
+      
+    """
+    
+    no_punct = ""
+    for ch in text:
+        if ch not in string.punctuation:
+            no_punct += ch
+    
+    words = no_punct.split()
+    return " ".join(words).lower()
+
+test_texts = [
+    'Hello, World!',
+    '  Python is GREAT!!!  ',
+    "It's 5 o'clock, isn't it?",
+    ''
+]
+
+for raw in test_texts:
+    print(f"{raw!r} -> {preprocess_text(raw)!r}")
