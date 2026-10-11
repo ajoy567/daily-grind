@@ -37,6 +37,7 @@ def is_valid_email(email: str) -> tuple[bool, str]:
     return True, "Email is valid."
 
 
+
 test_emails = [
     'riya@gmail.com',
     'riya.gmail.com',
@@ -48,6 +49,17 @@ test_emails = [
     'riya@gmail.'
 ]
 
+# for email in test_emails:
+#  is_valid, message = is_valid_email(email)
+#   print(f"{email!r} -> {is_valid}, {message}")
+    
+    
+invalid_counters = 0
+
 for email in test_emails:
     is_valid, message = is_valid_email(email)
-    print(f"{email!r} -> {is_valid}, {message}")
+    if not is_valid:
+        invalid_counters += 1
+        print(f"{email!r} -> not valid, {message}")
+
+print(f"Invalid emails: {invalid_counters} out of {len(test_emails)} ({invalid_counters / len(test_emails) * 100:.2f}%)")

@@ -9,6 +9,7 @@
 
 ## Day 2
 
-- Clicked: edge cases are inputs that pass the main rules but are still wrong. One if per case, each with its own reason.
-- Confused: forgot how to find edge cases. Ask "what's the weirdest input that still passes?"
-- Remember: check the simple rules first, then split.
+- Clicked: an edge case is an input that passes the main rules but is still wrong. I add one `if` per case, each with its own reason.
+- Confused: I forgot how to find edge cases. Trick: ask "what's the weirdest input that still passes?"
+- Bug I made: in my second loop I wrote `for mail in ...` but called `is_valid_email(email)`. It ran without an error but gave 100% instead of 87.5%. Loop variable names must match what I use inside.
+- ML twist: counted invalid emails and printed the percent. This is a basic data quality check before training a model.
