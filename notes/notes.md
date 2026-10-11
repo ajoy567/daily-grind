@@ -13,3 +13,9 @@
 - Confused: I forgot how to find edge cases. Trick: ask "what's the weirdest input that still passes?"
 - Bug I made: in my second loop I wrote `for mail in ...` but called `is_valid_email(email)`. It ran without an error but gave 100% instead of 87.5%. Loop variable names must match what I use inside.
 - ML twist: counted invalid emails and printed the percent. This is a basic data quality check before training a model.
+
+## Day 3
+
+- Clicked: split, guard, take, count. Always check that the list isn't empty before using [0].
+- Bug I made: put the empty check after split()[0], so it crashed before the check ran.
+- Remember: .upper() makes 'error' and 'ERROR' the same key.
