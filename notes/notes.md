@@ -16,6 +16,6 @@
 
 ## Day 3
 
-- Clicked: split, guard, take, count. Always check that the list isn't empty before using [0].
-- Bug I made: put the empty check after split()[0], so it crashed before the check ran.
-- Remember: .upper() makes 'error' and 'ERROR' the same key.
+- Clicked: split, guard, take, count. Check that the list isn't empty before using [0].
+- Bug I made: put the empty check after split()[0], so it crashed before the check ran. Also tried to format a whole dict with :.2f, but formatting only works on one number at a time, so I looped over the dict.
+- ML twist: percentages of each label show class imbalance. A model can look accurate just by always guessing the biggest class.

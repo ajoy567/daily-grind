@@ -34,3 +34,30 @@ logs = [
 ]
 
 print(count_levels(logs))  # Output: {'INFO': 4, 'WARN': 2, 'ERROR': 2}
+
+def level_percentage(level_counts: dict[str, int]) -> dict[str, float]:
+    """
+    Calculate the percentage of each log level based on their counts.
+
+    Args:
+        level_counts (dict[str, int]): A dictionary with log levels as keys and their counts as values.
+
+    Returns:
+        dict[str, float]: A dictionary with log levels as keys and their percentage as values.
+    """
+    
+    total_logs = sum(level_counts.values())
+    if total_logs == 0:
+        return {level: 0.0 for level in level_counts}
+    
+    percentages: dict[str, float] = {}
+    for level, count in level_counts.items():
+        percentages[level] = (count / total_logs) * 100
+    return percentages
+
+percentages = level_percentage(count_levels(logs))
+
+for level, percentage in percentages.items():
+    print(f"{level}: {percentage:.2f}%")
+    if percentage > 80:
+        print(f"Warning: {level} logs exceed 80% of total logs. Possible issue detected.")
