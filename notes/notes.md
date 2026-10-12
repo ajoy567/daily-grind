@@ -22,8 +22,24 @@
 
 ## Day 4
 
-- Clicked: check for problems first, change the data last. In sell(), the checks (bad qty, missing item, not enough stock) come before the subtraction, and each `raise` stops the function.
-- Bug I made: I put the checks after the sale, so a valid sale still raised an error. Order matters.
-- Remember: edge case = the unusual situation. `if` detects it and `raise` reports it. `try/except` is for the code that calls the function.
-- Weird inputs I tested: qty 0, negative qty, missing item, selling more than the stock, selling exactly the stock (item deleted), qty equal to the threshold in low_stock.
-- Docstring trick: answer four questions. What does it do? What goes in? What comes out? What can go wrong?
+## Learning Notes
+
+### 2026-10-12 — Inventory + Vocabulary
+
+**Built:** stock tracker (`restock`, `sell`, `low_stock`) + vocab builder
+(word -> int id, with `<unk>` at 0).
+
+**Decided:**
+
+- Sell to 0 deletes the key — keeps `low_stock` clean.
+- `low_stock` uses `<` not `<=`.
+- Regex `[a-zA-Z0-9']+` for tokenizing, keeps "don't" intact.
+- Class > free functions once state + behavior belong together.
+
+**Bug:** my first vocab counted frequencies, not ids. Also had
+`split()` inside a per-character loop and a dead `vocab = " ".join`.
+
+**Lesson:** silently dropping unknown words is the worst default.
+Reserve `<unk>` or raise — don't hide tokenizer drift.
+
+**Next:** test empty/punctuation-only input. Try incremental `add()`.
