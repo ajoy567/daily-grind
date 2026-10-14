@@ -51,38 +51,45 @@ Reserve `<unk>` or raise — don't hide tokenizer drift.
 ## What I built
 
 - `final_price(price, discount_pct=0, tax_pct=18)` — discount first, then
-  tax on the reduced amount. Rounds to 2 decimals.
+  tax on the reduced amount. Validates inputs, rounds to 2 decimals.
 - `cart_total(*items)` — sums any number of `(price, qty)` pairs. No tax,
   no discount.
+- `normalize(values)` — min–max scaling to 0–1. Handles all-equal and
+  empty inputs. Does not mutate the caller's list.
 
 ## Decisions I made (and why)
 
-- **Order of operations:** discount → tax. Tax is charged on what the
-  customer actually pays, not the sticker price. Documented in the docstring.
+- **Order of operations in `final_price`:** discount → tax. Tax is charged
+  on what the customer actually pays, not the sticker price.
 - **Fail loud, fail early:** invalid inputs raise `ValueError` at the call
-  site. Returning `None` or a sentinel would force every caller to remember
-  to check.
+  site. Returning `None` or a sentinel would force every caller to
+  remember to check.
 - **`cart_total` doesn't apply tax.** The spec doesn't ask for it, and
-  keeping it as a pure sum keeps the function reusable.
-- **Empty cart returns `0.0`.** Falls out of starting `total = 0` — the
-  empty case isn't special.
+  keeping it a pure sum keeps the function reusable.
+- **Empty cart returns `0.0`.** Falls out of starting `total = 0`.
+- **`normalize` returns `0.0` for all-equal input.** Range is undefined
+  there; sklearn's `MinMaxScaler` makes the same choice. Crashing on a
+  constant column would break a real pipeline.
+- **`normalize` returns `[]` for empty input.** Mapping an empty list
+  should give an empty list — empty in, empty out. Keeps pipelines moving.
 
 ## Mistakes I made
 
-1. **Validated the result, not the input.** First version checked
-   `discounted_price > 100` instead of `discount_pct > 100`. This both
-   rejected valid discounts (e.g. 20% off a ₹1000 item) and let through
-   invalid ones. Lesson: **check the input at the boundary, not the
-   output.**
+1. **Validated the result, not the input.** First `final_price` checked
+   `discounted_price > 100` instead of `discount_pct > 100`. Rejected valid
+   discounts and let through invalid ones. Lesson: **check the input at
+   the boundary, not the output.**
 2. **Shadowed the function name.** Assigned `final_price = ...` inside
-   `final_price()`. Works, but breaks if you ever call the function
-   recursively or add code below. Renamed the local to `total`.
-3. **Invented an input shape.** Wrote `cart_total` assuming items were
+   `final_price()`. Renamed the local to `total`.
+3. **Shadowed a builtin.** Named a variable `range` inside `normalize`.
+   Renamed to `data_range`.
+4. **Invented an input shape.** Wrote `cart_total` assuming items were
    objects with `.price` / `.quantity`, but the spec said plain tuples.
    Lesson: **read the spec literally the first time.**
-4. **Docstring drifted from code.** Kept the old "objects with attributes"
-   description after switching to tuple unpacking. Docstrings are contracts
-   — they need to change with the code.
+5. **Treated "handle" as "raise."** First `normalize` raised
+   `ZeroDivisionError` on all-equal input. That's exactly what Python
+   would have raised anyway — the check did nothing new. "Handle" means
+   *return something useful*, not *raise a nicer error*.
 
 ## Things I want to remember
 
@@ -91,4 +98,9 @@ Reserve `<unk>` or raise — don't hide tokenizer drift.
   `item[0]` / `item[1]`.
 - `round(2.675, 2)` → `2.67`, not `2.68` (banker's rounding + float
   imprecision). Real money code uses `Decimal`.
-- Docstring `Raises:` section must be updated whenever I add a new check.
+- Min–max scaling: `(x - lo) / (hi - lo)`. Compute min/max **once** —
+  recomputing inside a loop is O(n²).
+- `MinMaxScaler` on constant input returns all `0.0`. Good industry
+  default to copy.
+- **Docstrings are contracts.** When behavior changes, the docstring
+  changes with it. Especially the edge cases and the `Raises:` section.
