@@ -43,3 +43,52 @@
 Reserve `<unk>` or raise — don't hide tokenizer drift.
 
 **Next:** test empty/punctuation-only input. Try incremental `add()`.
+
+## Day 5 — Price calculator
+
+**Theme:** defaults, validation on inputs, and `*args` unpacking.
+
+## What I built
+
+- `final_price(price, discount_pct=0, tax_pct=18)` — discount first, then
+  tax on the reduced amount. Rounds to 2 decimals.
+- `cart_total(*items)` — sums any number of `(price, qty)` pairs. No tax,
+  no discount.
+
+## Decisions I made (and why)
+
+- **Order of operations:** discount → tax. Tax is charged on what the
+  customer actually pays, not the sticker price. Documented in the docstring.
+- **Fail loud, fail early:** invalid inputs raise `ValueError` at the call
+  site. Returning `None` or a sentinel would force every caller to remember
+  to check.
+- **`cart_total` doesn't apply tax.** The spec doesn't ask for it, and
+  keeping it as a pure sum keeps the function reusable.
+- **Empty cart returns `0.0`.** Falls out of starting `total = 0` — the
+  empty case isn't special.
+
+## Mistakes I made
+
+1. **Validated the result, not the input.** First version checked
+   `discounted_price > 100` instead of `discount_pct > 100`. This both
+   rejected valid discounts (e.g. 20% off a ₹1000 item) and let through
+   invalid ones. Lesson: **check the input at the boundary, not the
+   output.**
+2. **Shadowed the function name.** Assigned `final_price = ...` inside
+   `final_price()`. Works, but breaks if you ever call the function
+   recursively or add code below. Renamed the local to `total`.
+3. **Invented an input shape.** Wrote `cart_total` assuming items were
+   objects with `.price` / `.quantity`, but the spec said plain tuples.
+   Lesson: **read the spec literally the first time.**
+4. **Docstring drifted from code.** Kept the old "objects with attributes"
+   description after switching to tuple unpacking. Docstrings are contracts
+   — they need to change with the code.
+
+## Things I want to remember
+
+- `*items` collects positional args into a **tuple of tuples**.
+- `for price, qty in items:` — unpack in the loop header. Cleaner than
+  `item[0]` / `item[1]`.
+- `round(2.675, 2)` → `2.67`, not `2.68` (banker's rounding + float
+  imprecision). Real money code uses `Decimal`.
+- Docstring `Raises:` section must be updated whenever I add a new check.
