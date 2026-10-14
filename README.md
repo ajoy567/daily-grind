@@ -4,5 +4,8 @@
 
 | Day   | Topic                  | Done   |
 |-------|------------------------|--------|
-| 1     | Clean messy user input |        |
-| 2     | Validate an email      |        |
+| 1     | Clean messy user input | Yes    |
+| 2     | Validate an email      | Yes    |
+| 3     | Count log levels       | Yes    |
+| 4     | Inventory tracker      | Yes    |
+| 5     | Price calculator       | Yes    |
